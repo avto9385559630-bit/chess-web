@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Шахматы для начинающих</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f4f4;
+    text-align: center;
+}
+#board {
+    display: grid;
+    grid-template-columns: repeat(8, 60px);
+    width: 480px;
+    margin: 30px auto;
+}
+.cell {
+    width: 60px;
+    height: 60px;
+    font-size: 36px;
+    line-height: 60px;
+    cursor: pointer;
+}
+.white { background: #f0d9b5; }
+.black { background: #b58863; }
+</style>
+</head>
+<body>
+
+<h1>♟ Учимся играть в шахматы</h1>
+<p>Нажми на фигуру — потом на клетку</p>
+
+<div id="board"></div>
+
+<script>
+const board = document.getElementById("board");
+
+const pieces = [
+  "♜","♞","♝","♛","♚","♝","♞","♜",
+  "♟","♟","♟","♟","♟","♟","♟","♟",
+  "","","","","","","","",
+  "","","","","","","","",
+  "","","","","","","","",
+  "","","","","","","","",
+  "♙","♙","♙","♙","♙","♙","♙","♙",
+  "♖","♘","♗","♕","♔","♗","♘","♖"
+];
+
+let selected = null;
+
+for (let i = 0; i < 64; i++) {
+    const cell = document.createElement("div");
+    cell.className = "cell " + ((Math.floor(i/8)+i)%2 ? "black" : "white");
+    cell.textContent = pieces[i];
+
+    cell.onclick = () => {
+        if (selected === null && cell.textContent !== "") {
+            selected = cell;
+            cell.style.background = "#88f";
+        } else if (selected) {
+            cell.textContent = selected.textContent;
+            selected.textContent = "";
+            selected.style.background = "";
+            selected = null;
+        }
+    };
+
+    board.appendChild(cell);
+}
+</script>
+
+</body>
+</html>
