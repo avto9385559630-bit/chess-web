@@ -1,0 +1,19 @@
+body { text-align: center; font-family: Arial; }
+
+#board {
+  width: 320px;
+  display: grid;
+  grid-template-columns: repeat(8, 40px);
+  margin: auto;
+}
+
+.cell {
+  width: 40px;
+  height: 40px;
+  font-size: 28px;
+  text-align: center;
+  line-height: 40px;
+}
+
+.white { background: #eee; }
+.black { background: #999; }
