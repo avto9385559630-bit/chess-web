@@ -1,73 +1,59 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
 <meta charset="UTF-8">
-<title>Шахматы для начинающих</title>
-<style>
-body {
-    font-family: Arial, sans-serif;
-    background: #f4f4f4;
-    text-align: center;
-}
-#board {
-    display: grid;
-    grid-template-columns: repeat(8, 60px);
-    width: 480px;
-    margin: 30px auto;
-}
-.cell {
-    width: 60px;
-    height: 60px;
-    font-size: 36px;
-    line-height: 60px;
-    cursor: pointer;
-}
-.white { background: #f0d9b5; }
-.black { background: #b58863; }
-</style>
+<title>Chess</title>
+
+<link rel="stylesheet" href="chessboard.css">
+<script src="chess.js"></script>
+<script src="chessboard.js"></script>
 </head>
+
 <body>
 
-<h1>♟ Учимся играть в шахматы</h1>
-<p>Нажми на фигуру — потом на клетку</p>
-
-<div id="board"></div>
+<h2>♟ Игра с ИИ</h2>
+<div id="board" style="width: 400px"></div>
 
 <script>
-const board = document.getElementById("board");
+let board = null
+let game = new Chess()
 
-const pieces = [
-  "♜","♞","♝","♛","♚","♝","♞","♜",
-  "♟","♟","♟","♟","♟","♟","♟","♟",
-  "","","","","","","","",
-  "","","","","","","","",
-  "","","","","","","","",
-  "","","","","","","","",
-  "♙","♙","♙","♙","♙","♙","♙","♙",
-  "♖","♘","♗","♕","♔","♗","♘","♖"
-];
-
-let selected = null;
-
-for (let i = 0; i < 64; i++) {
-    const cell = document.createElement("div");
-    cell.className = "cell " + ((Math.floor(i/8)+i)%2 ? "black" : "white");
-    cell.textContent = pieces[i];
-
-    cell.onclick = () => {
-        if (selected === null && cell.textContent !== "") {
-            selected = cell;
-            cell.style.background = "#88f";
-        } else if (selected) {
-            cell.textContent = selected.textContent;
-            selected.textContent = "";
-            selected.style.background = "";
-            selected = null;
-        }
-    };
-
-    board.appendChild(cell);
+function onDragStart (source, piece) {
+  if (game.game_over()) return false
+  if (piece.search(/^b/) !== -1) return false
 }
+
+function onDrop (source, target) {
+  let move = game.move({
+    from: source,
+    to: target,
+    promotion: 'q'
+  })
+
+  if (move === null) return 'snapback'
+
+  setTimeout(makeAIMove, 300)
+}
+
+function makeAIMove() {
+  fetch("http://localhost:8000/move", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({fen: game.fen()})
+  })
+  .then(r => r.json())
+  .then(data => {
+    game.load(data.fen)
+    board.position(game.fen())
+  })
+}
+
+board = Chessboard('board', {
+  draggable: true,
+  position: 'start',
+  onDragStart: onDragStart,
+  onDrop: onDrop
+})
 </script>
 
 </body>
